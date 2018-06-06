@@ -198,6 +198,28 @@ class HistoryLog(SpyderPluginWidget):
             if linenb_n in options:
                 editor.toggle_line_numbers(linenumbers=linenb_o, markers=False)
 
+    def run_selection(self):
+        """
+        Run selected text or current line in console. 
+
+        If some text is selected, then execute that text in console.
+
+        If no text is selected, then execute current line, unless current line
+        is empty. Then, advance cursor to next line. If cursor is on last line
+        and that line is not empty, then add a new blank line and move the
+        cursor there. If cursor is on last line and that line is empty, then do
+        not move cursor.
+        """
+        text = self.tabwidget.currentWidget().get_selection_as_executable_code()
+        if text:
+            self.main.execute_in_external_console(text, False)
+            return
+        editor = self.tabwidget.currentWidget()
+        line = editor.get_current_line()
+        text = line.lstrip()
+        if text:
+            self.main.execute_in_external_console(text, False)
+                
     #------ Private API --------------------------------------------------------
     def move_tab(self, index_from, index_to):
         """
@@ -226,6 +248,7 @@ class HistoryLog(SpyderPluginWidget):
         editor.setup_editor(linenumbers=self.get_option('line_numbers'),
                             language=language,
                             scrollflagarea=False)
+        editor.run_selection.connect(self.run_selection)
         editor.focus_changed.connect(lambda: self.focus_changed.emit())
         editor.setReadOnly(True)
         color_scheme = self.get_color_scheme()

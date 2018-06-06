@@ -2520,7 +2520,7 @@ class CodeEditor(TextEditBaseWidget):
         self.readonly_menu = QMenu(self)
         add_actions(self.readonly_menu,
                     (self.copy_action, None, selectall_action,
-                     self.gotodef_action))
+                     self.gotodef_action, None, self.run_selection_action))
 
     def keyReleaseEvent(self, event):
         """Override Qt method."""
